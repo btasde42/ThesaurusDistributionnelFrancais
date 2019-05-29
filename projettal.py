@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 #une fonction pour lire un corpus 
+from collections import OrderedDict
 def readLemmeEtCategorie(m):
 	l=[]
 	with open(m,"r") as f:
@@ -11,41 +12,18 @@ def readLemmeEtCategorie(m):
 				if (newline[3] == "ADV") or (newline[3]== "N") or (newline[3] == "V") or (newline[3]== "A"):
 					l.append((newline[2],newline[3]))#une list de tuple
 	return l #list de tuple
-				
-def contextAdj(m):
+			
+def dict_tout_mot(m):
 	l=readLemmeEtCategorie(m)
-	l = sorted(l, key = lambda categorie : categorie[1])#list de tuple
-	listA=[]
+	list_dict=[]
 	for i in range(len(l)):
-		if l[i][1]=="A":
-			listA.append(l[i][0]) #list de string
-	#on doit creer les contexts entre les deut mots
-	listcontxteA=[]
-	for i in range(1,len(listA)):
-		listcontxteA.append((listA[i-1],1,listA[i]))
-		listcontxteA.append((listA[i],-1,listA[i-1]))
-	#on cree une dictionnaire pour calculer les frequences
-	adj={}
-	for k in listcontxteA:
-		adj[k]=adj.get(k,0)+1
-	return adj
-	
-def contexteN(m):
-	l=readLemmeEtCategorie(m)
-	l = sorted(l, key = lambda categorie : categorie[1])#list de tuple
-	listN=[]	
-	for i in range(len(l)):
-		if l[i][1]=="N":
-			listN.append(l[i][0])
-	listcontxteN=[]
-	for i in range(1,len(listN)):
-		listcontxteN.append((listN[i-1],1,listN[i]))
-		listcontxteN.append((listN[i],-1,listN[i-1]))
-	nom={}
-	for k in listcontxteN:
-		nom[k]=nom.get(k,0)+1
-	return nom
-
+		list_dict.append((l[i-1],1,l[i]))
+		list_dict.append((l[i],-1,l[i-1]))
+	dict_tout=OrderedDict()
+	for k in list_dict:
+		dict_tout[k]=dict_tout.get(k,0)+1
+	return dict_tout
+'''
 def contexreV(m):
 	l=readLemmeEtCategorie(m)
 	l = sorted(l, key = lambda categorie : categorie[1])#list de tuple
@@ -61,23 +39,29 @@ def contexreV(m):
 	for k in listcontxteV:
 		verb[k]=verb.get(k,0)+1
 	return verb
+'''
 
-def contexteADV(m):
-	l=readLemmeEtCategorie(m)
-	l = sorted(l, key = lambda categorie : categorie[1])#list de tuple
-	listADV=[]
-	for i in range(len(l)):
-		if l[i][1]=="ADV":
-			listADV.append(l[i][0])
-	listcontxteADV=[]
-	for i in range(1,len(listADV)):
-		listcontxteADV.append((listADV[i-1],1,listADV[i]))
-		listcontxteADV.append((listADV[i],-1,listADV[i-1]))
-	adv={}
-	for k in listcontxteADV:
-		adv[k]=adv.get(k,0)+1
-	return adv
+#def vector(m):
+#	list_de_vector=[]
+#	length_dict=
+
+
+def frenq_context(m):
+	#donc ici nom est en fait une dictionnaire, chaque key est une tuple(w,r,w'), chaque key est une frequence
+	#ici, on doit trouver une tuple, et sa frequence== kye, apres on doit trouver les autres tuples qui contien le meme w,
+	frequenceDeMemeContext=OrderedDict()
+	for n in dict_tout_mot(m):#n ici est une tuple((w,cat),r,(w',cat))	
+		frequenceDeMemeContext[n[1:3]]=frequenceDeMemeContext.get(n[1:3],0)+1
+	return frequenceDeMemeContext
+
+		
+
+#def weight(m):
+
+
 	
 m = "estrepublicain.extrait-aa.19998.outmalt"
 #print(readLemmeEtCategorie(m))
-print(contexteADV(m))
+print(dict_tout_mot(m))
+#print(frenq_context(m))
+
