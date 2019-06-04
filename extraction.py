@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 #une fonction pour lire un corpus 
+from spacy.vectors import Vectors
 from collections import OrderedDict
+import pandas as pd
 def readLemmeEtCategorie(m):
+	"""
+	Cette fonction renvoie une liste des lemmes avec leurs catégorie morpho-syntaxique
+	Args:
+		m:une fichier
+	Returns:
+		une lite des tuples
+	"""
 	l=[]
 	with open(m,"r") as f:
 		lines = f.readlines() #chaque line est un list de string, donc lines est un list de list de string
@@ -14,6 +23,13 @@ def readLemmeEtCategorie(m):
 	return l #list de tuple
 			
 def dict_tout_mot(m):
+	"""
+	Cette fonction crée une dictionnaire des mots existant dans une fichier
+	Args:
+		m:un fichier
+	returns:
+		une dictionnaire
+	"""
 	l=readLemmeEtCategorie(m)
 	list_dict=[]
 	for i in range(len(l)):
@@ -23,45 +39,93 @@ def dict_tout_mot(m):
 	for k in list_dict:
 		dict_tout[k]=dict_tout.get(k,0)+1
 	return dict_tout
-'''
-def contexreV(m):
-	l=readLemmeEtCategorie(m)
-	l = sorted(l, key = lambda categorie : categorie[1])#list de tuple
-	listV=[]
-	for i in range(len(l)):
-		if l[i][1]=="V":
-			listV.append(l[i][0])
-	listcontxteV=[]
-	for i in range(1,len(listV)):
-		listcontxteV.append((listV[i-1],1,listV[i]))
-		listcontxteV.append((listV[i],-1,listV[i-1]))
-	verb={}
-	for k in listcontxteV:
-		verb[k]=verb.get(k,0)+1
-	return verb
-'''
-
-#def vector(m):
-#	list_de_vector=[]
-#	length_dict=
 
 
-def frenq_context(m):
-	#donc ici nom est en fait une dictionnaire, chaque key est une tuple(w,r,w'), chaque key est une frequence
-	#ici, on doit trouver une tuple, et sa frequence== kye, apres on doit trouver les autres tuples qui contien le meme w,
-	frequenceDeMemeContext=OrderedDict()
-	for n in dict_tout_mot(m):#n ici est une tuple((w,cat),r,(w',cat))	
-		frequenceDeMemeContext[n[1:3]]=frequenceDeMemeContext.get(n[1:3],0)+1
-	return frequenceDeMemeContext
 
-		
+def get_all_contexts(dictt):
+	"""
+	Renvoie une liste des contextes où il y a des contextes uniques et leur frequence 
+	"""
+	dict_contx=OrderedDict()
+	for k,v in dictt.items():
+		dict_contx[k[1:3]]=dict_contx.get(k[1:3],0)+1
+	list_contx=[]
+	for k,v in dict_contx.items():
+		list_contx.append((k,v))
+	return list_contx
 
-#def weight(m):
+	list_contx=[]
+	for k,v in dictt.items():
+		list_contx.append((k,v))
+	return list_contx
 
+def get_all_keys(dictt):
+	"""
+	Renvoie une liste de tuples où il y a les clés uniques et leur frequence
+	"""
+	dict_key=OrderedDict()
+	for k,v in dictt.items():
+		dict_key[k[0]]=dict_key.get(k[0],0)+1
 
 	
-m = "estrepublicain.extrait-aa.19998.outmalt"
+	list_key=[]
+	for k,v in dict_key.items():			
+		list_key.append((k,v))
+	return list_key
+
+def get_treshold_freq(l):
+	"""
+	Renvoie la limite de fréquence pour éliminer les elts qui sont plus petits en prenant la moyenne
+	"""
+	summ=0
+	nbr=0
+	for t1,t2 in l:
+		summ+=t2
+		nbr+=1
+
+	return summ//nbr
+
+def get_list_delete(l):
+	"""
+	Cette fonction crée une liste des contextes ou w qui vont etre enlévé de dict_tout_mot
+	"""
+	treshold=get_treshold_freq(l)
+	list_delete=[]
+	for i,j in l:
+		if j<treshold:
+			list_delete.append((i,j))
+	return list_delete
+
+def create_coocurency_vecs(dict_mot, keys, contextes):
+	"""
+	Cette fonction renvoie une espace vectorielle qui contient les w comme keys 
+	Version tres lente !!! ça marche pas très bien pour le moment
+	"""
+	word_vectors=Vectors(shape=(len(keys),len(contextes)))
+	#on cree un vecteur dans le dimentions des clés et contextes uniques
+	list_freq=[]
+	for key in keys:
+		for k,v in dict_mot.items():
+			if k[0]==key:
+				list_freq.append(v)
+			else:
+				list_freq.append(0)
+		
+		word_vectors.add(key,row=list_freq)
+	
+	#ecriture des freq vectors sur une fichier
+
+
+#TESTS
+m = "EP.tcs.melt.utf8.split-aa.outmalt"
 #print(readLemmeEtCategorie(m))
-print(dict_tout_mot(m))
-#print(frenq_context(m))
+d=dict_tout_mot(m)
+
+keys=get_all_keys(d)
+
+contx=get_all_contexts(d)
+
+print(get_list_delete(keys))
+
+#create_coocurency_vecs(d,keys,contx)
 
