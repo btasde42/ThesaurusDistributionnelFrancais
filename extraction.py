@@ -94,6 +94,23 @@ def get_list_delete(l):
 			list_delete.append((i,j))
 	return list_delete
 
+def get_cat_dict(cat, dictt):
+	"""
+	Cette fonction renvoie une dictionnaire quicontient comme clés des w d'une certain categorie
+	morpho-syntx et comme valeur la liste de contexte qui apparaisse avec cette mot
+	"""
+
+	dict_cat=OrderedDict()
+
+	for k,v in dictt.items():
+		if k[0][1] == cat:
+			if k[0] in dict_cat:
+				dict_cat[k[0]].append((k[1:3],v))
+			else:
+				dict_cat[k[0]]=[]
+	
+	return dict_cat
+
 def create_coocurency_vecs(dict_mot, keys, contextes):
 	"""
 	Cette fonction renvoie une espace vectorielle qui contient les w comme keys 
