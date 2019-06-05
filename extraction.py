@@ -49,15 +49,13 @@ def get_all_contexts(dictt):
 	dict_contx=OrderedDict()
 	for k,v in dictt.items():
 		dict_contx[k[1:3]]=dict_contx.get(k[1:3],0)+1
+	
 	list_contx=[]
-	for k,v in dict_contx.items():
-		list_contx.append((k,v))
+	for i,j in dict_contx.items():
+		list_contx.append((i,j))
 	return list_contx
 
-	list_contx=[]
-	for k,v in dictt.items():
-		list_contx.append((k,v))
-	return list_contx
+
 
 def get_all_keys(dictt):
 	"""
@@ -69,8 +67,8 @@ def get_all_keys(dictt):
 
 	
 	list_key=[]
-	for k,v in dict_key.items():			
-		list_key.append((k,v))
+	for i,j in dict_key.items():			
+		list_key.append((i,j))
 	return list_key
 
 def get_treshold_freq(l):
@@ -110,10 +108,11 @@ def create_coocurency_vecs(dict_mot, keys, contextes):
 				list_freq.append(v)
 			else:
 				list_freq.append(0)
-		
+		print(key)
+		print(list_freq)
 		word_vectors.add(key,row=list_freq)
 	
-	#ecriture des freq vectors sur une fichier
+
 
 
 #TESTS
@@ -124,8 +123,7 @@ d=dict_tout_mot(m)
 keys=get_all_keys(d)
 
 contx=get_all_contexts(d)
+create_coocurency_vecs(d,keys,contx)
 
-print(get_list_delete(keys))
 
-#create_coocurency_vecs(d,keys,contx)
 
