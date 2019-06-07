@@ -18,8 +18,7 @@ def readLemmeEtCategorie(m):
 		for line in lines:
 			newline = line.split()
 			if len(newline)!=0:
-				if (newline[3] == "ADV") or (newline[3]== "N") or (newline[3] == "V") or (newline[3]== "A"):
-					l.append((newline[2],newline[3]))#une list de tuple
+				l.append((newline[2],newline[3]))#une list de tuple
 	return l #list de tuple
 			
 def dict_tout_mot(m):
@@ -35,10 +34,24 @@ def dict_tout_mot(m):
 	for i in range(len(l)):
 		list_dict.append((l[i-1],1,l[i]))
 		list_dict.append((l[i],-1,l[i-1]))
-	dict_tout=OrderedDict()
-	for k in list_dict:
-		dict_tout[k]=dict_tout.get(k,0)+1
-	return dict_tout
+	dict_nom={}
+	dict_verbe={}
+	dict_adj={}
+	dict_adv={}
+	dict_all={}
+	list_nom=[]
+	dict_all["N"]=dict_nom
+	dict_all["V"]=dict_verbe
+	dict_all["ADJ"]=dict_adj
+	dict_all["ADV"]=dict_adv
+	frequence=0
+	for i in list_dict:
+		if i[0][1]=="N":
+			if i[0] in dict_nom:
+				dict_nom[i[0]].append((i[1:],frequence))
+			else:
+				dict_nom[i[0]]=[]
+	print(dict_nom)
 
 
 
