@@ -34,24 +34,74 @@ def dict_tout_mot(m):
 	for i in range(len(l)):
 		list_dict.append((l[i-1],1,l[i]))
 		list_dict.append((l[i],-1,l[i-1]))
+	#list_dict est une liste de [(('futur', 'A'), -1, ('de', 'P+D'))] (comme un model)
+
 	dict_nom={}
 	dict_verbe={}
 	dict_adj={}
 	dict_adv={}
+
 	dict_all={}
-	list_nom=[]
+
 	dict_all["N"]=dict_nom
 	dict_all["V"]=dict_verbe
 	dict_all["ADJ"]=dict_adj
 	dict_all["ADV"]=dict_adv
-	frequence=0
+
+	dict_nom_f={}
+	for i in list_dict:
+		if i[0][1]=="N":
+			dict_nom_f[i]=dict_nom_f.get(i,0)+1
+
 	for i in list_dict:
 		if i[0][1]=="N":
 			if i[0] in dict_nom:
-				dict_nom[i[0]].append((i[1:],frequence))
+				dict_nom[i[0]].append((i[1:],":",dict_nom_f[i]))
 			else:
 				dict_nom[i[0]]=[]
-	print(dict_nom)
+	#pour dict_nom, c'est un dictionnaire de dictionnaire
+
+	dict_verbe_f={}
+	for i in list_dict:
+		if i[0][1]=="V":
+			dict_verbe_f[i]=dict_verbe_f.get(i,0)+1
+
+	for i in list_dict:
+		if i[0][1]=="V":
+			if i[0] in dict_verbe:
+				dict_verbe[i[0]].append((i[1:],":",dict_verbe_f[i]))
+			else:
+				dict_verbe[i[0]]=[]
+
+
+	dict_adj_f={}
+	for i in list_dict:
+		if i[0][1]=="ADJ":
+			dict_adj_f[i]=dict_adj_f.get(i,0)+1
+
+	for i in list_dict:
+		if i[0][1]=="ADJ":
+			if i[0] in dict_adj:
+				dict_adj[i[0]].append((i[1:],":",dict_adj_f[i]))
+			else:
+				dict_adj[i[0]]=[]
+	
+	dict_adv_f={}
+	for i in list_dict:
+		if i[0][1]=="ADV":
+			dict_adv_f[i]=dict_adv_f.get(i,0)+1
+
+	for i in list_dict:
+		if i[0][1]=="ADV":
+			if i[0] in dict_adv:
+				dict_adv[i[0]].append((i[1:],":",dict_adv_f[i]))
+			else:
+				dict_adv[i[0]]=[]
+	
+	print(dict_all)
+
+
+
 
 
 
@@ -146,14 +196,13 @@ def create_coocurency_vecs(dict_mot, keys, contextes):
 
 
 #TESTS
-m = "EP.tcs.melt.utf8.split-aa.outmalt"
-#print(readLemmeEtCategorie(m))
+m = "estrepublicain.extrait-aa.19998.outmalt"
 d=dict_tout_mot(m)
-
-keys=get_all_keys(d)
-
-contx=get_all_contexts(d)
-create_coocurency_vecs(d,keys,contx)
+print(d)
+#keys=get_all_keys(d)
+#contx=get_all_contexts(d)
+#create_coocurency_vecs(d,keys,contx)
+#print(readLemmeEtCategorie(m))
 
 
 
