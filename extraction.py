@@ -21,13 +21,14 @@ def readLemmeEtCategorie(m):
 				l.append((newline[2],newline[3]))#une list de tuple
 	return l #list de tuple
 			
+
 def dict_tout_mot(m):
 	"""
 	Cette fonction crée une dictionnaire des mots existant dans une fichier
 	Args:
 		m:un fichier
 	returns:
-		une dictionnaire
+		une dictionnaire de dictionnaires de type: 4 grand Catégorie(N,V,Adj,V):{(w,cat): {((-1/+1,(w',cat)),freq)...}}
 	"""
 	l=readLemmeEtCategorie(m)
 	list_dict=[]
@@ -47,63 +48,42 @@ def dict_tout_mot(m):
 	dict_all["V"]=dict_verbe
 	dict_all["ADJ"]=dict_adj
 	dict_all["ADV"]=dict_adv
-
+	dict_verbe_f={}
 	dict_nom_f={}
+	dict_adj_f={}
+	dict_adv_f={}
+
 	for i in list_dict:
+		#on boucle qu'une seule fois sur le texte et on récupere l'information nécessaire sinon trop lente
 		if i[0][1]=="N":
 			dict_nom_f[i]=dict_nom_f.get(i,0)+1
-
-	for i in list_dict:
-		if i[0][1]=="N":
 			if i[0] in dict_nom:
-				dict_nom[i[0]].append((i[1:],":",dict_nom_f[i]))
+				dict_nom[i[0]].append((i[1:],dict_nom_f[i]))
 			else:
 				dict_nom[i[0]]=[]
-	#pour dict_nom, c'est un dictionnaire de dictionnaire
-
-	dict_verbe_f={}
-	for i in list_dict:
 		if i[0][1]=="V":
 			dict_verbe_f[i]=dict_verbe_f.get(i,0)+1
-
-	for i in list_dict:
-		if i[0][1]=="V":
 			if i[0] in dict_verbe:
-				dict_verbe[i[0]].append((i[1:],":",dict_verbe_f[i]))
+				dict_verbe[i[0]].append((i[1:],dict_verbe_f[i]))
 			else:
 				dict_verbe[i[0]]=[]
 
-
-	dict_adj_f={}
-	for i in list_dict:
 		if i[0][1]=="ADJ":
 			dict_adj_f[i]=dict_adj_f.get(i,0)+1
-
-	for i in list_dict:
-		if i[0][1]=="ADJ":
 			if i[0] in dict_adj:
-				dict_adj[i[0]].append((i[1:],":",dict_adj_f[i]))
+				dict_adj[i[0]].append((i[1:],dict_adj_f[i]))
 			else:
 				dict_adj[i[0]]=[]
-	
-	dict_adv_f={}
-	for i in list_dict:
+			
 		if i[0][1]=="ADV":
 			dict_adv_f[i]=dict_adv_f.get(i,0)+1
-
-	for i in list_dict:
-		if i[0][1]=="ADV":
 			if i[0] in dict_adv:
-				dict_adv[i[0]].append((i[1:],":",dict_adv_f[i]))
+				dict_adv[i[0]].append((i[1:],dict_adv_f[i]))
 			else:
 				dict_adv[i[0]]=[]
-	
+			
+
 	print(dict_all)
-
-
-
-
-
 
 def get_all_contexts(dictt):
 	"""
@@ -157,28 +137,13 @@ def get_list_delete(l):
 			list_delete.append((i,j))
 	return list_delete
 
-def get_cat_dict(cat, dictt):
-	"""
-	Cette fonction renvoie une dictionnaire quicontient comme clés des w d'une certain categorie
-	morpho-syntx et comme valeur la liste de contexte qui apparaisse avec cette mot
-	"""
 
-	dict_cat=OrderedDict()
-
-	for k,v in dictt.items():
-		if k[0][1] == cat:
-			if k[0] in dict_cat:
-				dict_cat[k[0]].append((k[1:3],v))
-			else:
-				dict_cat[k[0]]=[]
-	
-	return dict_cat
-
+"""
 def create_coocurency_vecs(dict_mot, keys, contextes):
-	"""
-	Cette fonction renvoie une espace vectorielle qui contient les w comme keys 
-	Version tres lente !!! ça marche pas très bien pour le moment
-	"""
+	#On n'a plus besoin de créer des vecteurs
+	#Cette fonction renvoie une espace vectorielle qui contient les w comme keys 
+	#Version tres lente !!! ça marche pas très bien pour le moment
+	
 	word_vectors=Vectors(shape=(len(keys),len(contextes)))
 	#on cree un vecteur dans le dimentions des clés et contextes uniques
 	list_freq=[]
@@ -190,7 +155,7 @@ def create_coocurency_vecs(dict_mot, keys, contextes):
 				list_freq.append(0)
 		print(key)
 		print(list_freq)
-		word_vectors.add(key,row=list_freq)
+		word_vectors.add(key,row=list_freq)"""
 	
 
 
