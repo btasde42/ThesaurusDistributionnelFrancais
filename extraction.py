@@ -428,7 +428,31 @@ now we still have to do:
 '''
 then we have to caqlculate the PMI and Cosine
 '''
+#to calculate the PMI, first we should knwo 2 parts : pmi(x,y)=log(f(x,y)/(f(x)*f(y))) f(x,y)=f(w,(r,w')) f(x)=f(w) f(y)=f(r,w')
+def frequency(term):
+    idx = wordcounts.lookup[term]
+    count = wordcounts.documentCounts[idx]
+    freq = (count * 1.0)/wordcounts.N_documents
+    return freq
 
+def pmi_denominator(term1, term2):
+    t1_freq = frequency(term1)
+    t2_freq = frequency(term2)
+    return t1_freq * t2_freq
+
+def pmi_numerator(term1, term2):
+    joint_count = len(set(wordcounts.papers_containing(term1)) & set(wordcounts.papers_containing(term2)))
+    joint_freq = (joint_count * 1.0)/wordcounts.N_documents
+    return joint_freq
+
+def pmi(term1, term2):
+    return math.log(pmi_numerator(term1, term2)/pmi_denominator(term1,term)) #I have a hunch there's something wrong with how I
+#implement the logarithm
+
+def npmi(term1, term2):
+    return pmi(term1, term2)/-(math.log(pmi_numerator(term1, term2)))        #And I think I could have misunderstood the formula
+
+#I think I messed up because when ran npmi('sceince', 'history'), my program returned 0.1164547010642906, which seems way too low for those two words.
 
 
 
