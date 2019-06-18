@@ -231,24 +231,24 @@ now we still have to do:
         still like readlemme
         ''' 
 
-'''        
-    def get_all_keys(dictt):
-        '''
-        Renvoie une liste de tuples où il y a les clés uniques et leur frequence
-        '''
-        dict_key=OrderedDict()
+        
+def get_all_keys(dictt):
+    '''
+    Renvoie une liste de tuples où il y a les clés uniques et leur frequence
+    '''
+    dict_key=OrderedDict()
 
-        for k,v in dictt.items():
-            dict_key[k[0]]=dict_key.get(k[0],0)+1
+    for k,v in dictt.items():
+        dict_key[k[0]]=dict_key.get(k[0],0)+1
 
-        list_key=[]
+    list_key=[]
 
-        for i,j in dict_key.items():            
-            list_key.append((i,j))
+    for i,j in dict_key.items():            
+        list_key.append((i,j))
 
-        return list_key
-'''
+    return list_key
 """
+
 
 '''
 then we have to caqlculate the PMI and Cosine
@@ -352,38 +352,69 @@ def frequency_w_et_context(l):
 
 def pmi(l):
     
-    allpmi={}
+    allpmi_N=[]
+    allpmi_V=[]
+    allpmi_A=[]
+    allpmi_ADV=[]
 
-    allpmi_N={}
-    allpmi_V={}
-    allpmi_A={}
-    allpmi_ADV={}
-
+    '''
     allpmi["N"]=allpmi_N
     allpmi["V"]=allpmi_V
     allpmi["A"]=allpmi_A
     allpmi["ADV"]=allpmi_ADV
+    '''
 
-    f1=frequency_w_et_context(l) #here f1 is actually a dictionnary
-    f2=frequency_w(l)
-    f3=frequency_context(l)
+    f1=frequency_w_et_context(l) #here f1 is actually a dictionnary {((w,c),r,(w',c)):freq ...
+    f2=frequency_w(l) # here f2 is a dictionnary {"N" : (w,c):freq ...
+    f3=frequency_context(l) # here f3 is a dictionnary {"N" : (r,(w',c)):freq ...
+
+    for k1 in f1:
+        if k1[0] in list(f2["N"].keys()) and k1[1:] in list(f3["N"].keys()):
+            allpmi_N.append(math.log(f1[k1]/(f2["N"][k1[0]]*f3["N"][k1[1:]])))
+
+    for k2 in f1:
+        if k2[0] in list(f2["V"].keys()) and k2[1:] in list(f3["V"].keys()):
+            allpmi_V.append(math.log(f1[k2]/(f2["V"][k2[0]]*f3["V"][k2[1:]])))
+
+    for k3 in f1:
+        if k3[0] in list(f2["A"].keys()) and k3[1:] in list(f3["A"].keys()):
+            allpmi_A.append(math.log(f1[k3]/(f2["A"][k3[0]]*f3["A"][k3[1:]])))
+
+    for k4 in f1:
+        if k4[0] in list(f2["ADV"].keys()) and k4[1:] in list(f3["ADV"].keys()):
+            allpmi_ADV.append(math.log(f1[k4]/(f2["ADV"][k4[0]]*f3["ADV"][k4[1:]])))
 
 
-    for k in f1:
-        if (k[0][1]=="N") and (k[0]in f2["N"]) and (k[1:]in f3["N"])  :
-            allpmi_N[k[0][0]]=math.log(f1[k]/(f2["N"][k[0]]*f3["N"][k[1:]]))
+    filename='pmi.csv'
+    with open(filename,'w') as f: #on enregistre les pmi de chaque mot
+        for i in list(set(allpmi_N)):
+                f.write(k1[0][0]+"NOMS")
+                f.write('\t')
+                f.write(str(i))
+                f.write('\n')
 
-        if (k[0][1]=="V") and (k[0]in f2["V"]) and (k[1:]in f3["V"]):
-            allpmi_V[k[0][0]]=math.log(f1[k]/(f2["V"][k[0]]*f3["V"][k[1:]]))
+        for i in list(set(allpmi_V)):
+                f.write(k2[0][0]+"VERBES")
+                f.write('\t')
+                f.write(str(i))
+                f.write('\n')
 
-        if (k[0][1]=="A") and (k[0]in f2["A"]) and (k[1:]in f3["A"]):
-            allpmi_A[k[0][0]]=math.log(f1[k]/(f2["A"][k[0]]*f3["A"][k[1:]]))
-        
-        if (k[0][1]=="ADV") and (k[0]in f2["ADV"]) and (k[1:]in f3["ADV"]):
-            allpmi_ADV[k[0][0]]=math.log(f1[k]/(f2["ADV"][k[0]]*f3["ADV"][k[1:]]))
+        for i in list(set(allpmi_A)):
+                f.write(k3[0][0]+"ADJECTIVES")
+                f.write('\t')
+                f.write(str(i))
+                f.write('\n')
 
-    return allpmi
+        for i in list(set(allpmi_ADV)):
+                f.write(k4[0][0]+"ADVERBES")
+                f.write('\t')
+                f.write(str(i))
+                f.write('\n')
 
+    f.close()
+
+
+#def consinus(w1,w2):
 
 
 
@@ -391,13 +422,13 @@ def pmi(l):
 
 #TESTS
 
-m = "EP.tcs.melt.utf8.split-az.outmalt"
+m = "estrepublicain.extrait-aa.19998.outmalt"
 
 l=(readLemmeEtCategorie(m))
 #dictt=dict_tout_mot(readLemmeEtCategorie(m))
 #get_list_delete(dictt,get_treshold_freq(dictt))
 #print(frequency_w(l))
 #print(frequency_context(l))
-#print(frequency_w_et_context(l))
+#print(frequency_w_et_context(l).keys())
 print(pmi(l))
 
