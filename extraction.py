@@ -144,43 +144,67 @@ def get_treshold_freq(dictt):
     return Dict_treshold
 
 def get_list_delete(dict_mot,dict_treshold):
-    '''
+    """
     Cette fonction crée une liste des contextes ou w qui vont etre enlévé de dict_tout_mot
-    '''
-
+    """
     list_delete_N=[]
     list_delete_V=[]
     list_delete_A=[]
     list_delete_ADV=[]
-
-    dict_all={} #on va créer une version de notre dictionnaire sans les contextes qui sont moins que le treshold
+    dict_all={}
+    dict_nom={}
+    dict_verbe={}
+    dict_adj={}
+    dict_adv={} #on va créer une version de notre dictionnaire sans les contextes qui sont moins que le treshold
 
     for k,v in dict_mot.items():
         if k=='N':
             for i,j in v.items():
-                for m,n in j.items():
-                    if n<=dict_treshold['N']:
-                        list_delete_N.append((m,n)) #enregistre les elts qui vont etre supprimé
+                dict_nom[i]={}
+                for m in j.keys():
+                    if j[m]<=dict_treshold['N']:
+                        list_delete_N.append((m,j[m])) #enregistre les elts qui vont etre supprimé
+                    else:
+                        dict_nom[i][m]=j[m] #on prends pas les elts moins de treshold dans la nouvelle dict
+                if dict_nom[i]=={}: #si apres la nettoyage du contexte le clé n'a aucun valeur, on le supprime également
+                    del dict_nom[i]
 
         if k=='V':
             for i,j in v.items():
-                for m,n in j.items():
-                    if n<=dict_treshold['V']:
-                        list_delete_V.append((m,n))
-
+                dict_verbe[i]={}
+                for m in j.keys():
+                    if j[m]<=dict_treshold['V']:
+                        list_delete_V.append((m,j[m]))
+                    else:
+                        dict_verbe[i][m]=j[m]
+                if dict_verbe[i]=={}:
+                    del dict_verbe[i]
         if k=='A':
             for i,j in v.items():
-                for m,n in j.items():
-                    if n<=dict_treshold['A']:
-                        list_delete_A.append((m,n))
+                dict_adj[i]={}
+                for m in j.keys():
+                    if j[m]<=dict_treshold['A']:
+                        list_delete_A.append((m,j[m]))
+                    else:
+                        dict_adj[i][m]=j[m]
+                if dict_adj[i]=={}:
+                    del dict_adj[i]
 
         if k=='ADV':
             for i,j in v.items():
-                for m,n in j.items():
-                    if n<=dict_treshold['ADV']:
-                        list_delete_ADV.append((m,n))
+                dict_adv[i]={}
+                for m in j.keys():
+                    if j[m]<=dict_treshold['ADV']:
+                        list_delete_ADV.append((m,j[m]))
+                    else:
+                        dict_adv[i][m]=j[m]
+                if dict_adv[i]=={}:
+                    del dict_adv[i]
+    dict_all['N']=dict_nom
+    dict_all['V']=dict_verbe
+    dict_all['A']=dict_adj
+    dict_all['ADV']=dict_adv
 
-    print(list_delete_N)
 
     filename='deleted_contx.csv'
     with open(filename,'w') as f: #on enregistre les contextes qu'on va supprimer pour garder la trace
@@ -189,26 +213,25 @@ def get_list_delete(dict_mot,dict_treshold):
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
-
         for i in list(set(list_delete_V)):
                 f.write("VERBES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
-
         for i in list(set(list_delete_A)):
                 f.write("ADJECTIVES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
-
         for i in list(set(list_delete_ADV)):
                 f.write("ADVERBES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
+
     f.close()
 
+    return dict_all
 
 '''
 now we still have to do: 
