@@ -372,81 +372,138 @@ def frequency_w_et_context(l):
 
     return frequency
 
+'''
+to calculate the pmi, i creat a mini function -- demo
+'''
+def demo(l):
+    pmi=[]
+    #for i in range(len(frequency_w(l)["V"])):
+    w=list(frequency_w(l)["V"].keys())[0] #get one word "blesse,N"
+    fx=frequency_w(l)["V"][w] #get the frequency 2
+    fy=frequency_context(l)["V"]
+    for n,v in fy.items():
+        ffy=v
+    fxy=frequency_w_et_context(l)
+    for k in fxy:
+        if k[0]==w:
+            ffxy=fxy[k]
+            pmi.append(math.log(ffxy/(fx*ffy)))
+            print(pmi)
+
+    filename="pmidemo.txt"
+    with open(filename,'w') as f: #on enregistre les pmi de chaque mot
+        for i in list(set(pmi)):
+                f.write(w[0]+" "+"VERBES")
+                f.write('\t')
+                f.write(str(i))
+                f.write('\n')
+
+    f.close()
 
 def pmi(l):
+    '''
+    to finish this fuction, it takes about 5 minutes
+    '''
+    list_allpmi_N=[]
+    list_allpmi_V=[]
+    list_allpmi_A=[]
+    list_allpmi_ADV=[]
 
-    allpmi={}
-    
     allpmi_N={}
     allpmi_V={}
     allpmi_A={}
     allpmi_ADV={}
 
+    for i in range(len(frequency_w(l)["N"])):
+        w=list(frequency_w(l)["N"].keys())[i] #get one word "blesse,N"
+        fx=frequency_w(l)["N"][w] #get the frequency 2
+        fy=frequency_context(l)["N"]
+        for n,v in fy.items():
+            ffy=v
+        fxy=frequency_w_et_context(l)
+        for k in fxy:
+            if k[0]==w:
+                ffxy=fxy[k]
+                list_allpmi_N.append(math.log(ffxy/(fx*ffy)))
+                allpmi_N[w]=list_allpmi_N
 
-    allpmi["N"]=allpmi_N
-    allpmi["V"]=allpmi_V
-    allpmi["A"]=allpmi_A
-    allpmi["ADV"]=allpmi_ADV
-
-
-    f1=frequency_w_et_context(l) #here f1 is actually a dictionnary {((w,c),r,(w',c)):freq ...
-    f2=frequency_w(l) # here f2 is a dictionnary {"N" : (w,c):freq ...
-    f3=frequency_context(l) # here f3 is a dictionnary {"N" : (r,(w',c)):freq ...
+                #print(allpmi_N)
     
-    for k2 in f2["N"]:
-        for k3 in f3["N"]:
-            k1=(k2,k3[0],k3[1])
-            if k2 in k1[0] and k1 in list(f1.keys()):
-                allpmi_N[k2].append(math.log(f1[k1]/(f2["N"][k2]*f3["N"][k3])))
+    for i in range(len(frequency_w(l)["V"])):
+        w=list(frequency_w(l)["V"].keys())[i] #get one word "blesse,N"
+        fx=frequency_w(l)["V"][w] #get the frequency 2
+        fy=frequency_context(l)["V"]
+        for n,v in fy.items():
+            ffy=v
+        fxy=frequency_w_et_context(l)
+        for k in fxy:
+            if k[0]==w:
+                ffxy=fxy[k]
+                list_allpmi_V.append(math.log(ffxy/(fx*ffy)))
+                allpmi_V[w]=list_allpmi_V
 
-    for k2 in f2["V"]:
-        for k3 in f3["V"]:
-            k1=(k2,k3[0],k3[1])
-            if k2 in k1[0] and k1 in list(f1.keys()):
-                allpmi_V[k2].append(math.log(f1[k1]/(f2["V"][k2]*f3["V"][k3])))
+    for i in range(len(frequency_w(l)["A"])):
+        w=list(frequency_w(l)["A"].keys())[i] #get one word "blesse,N"
+        fx=frequency_w(l)["A"][w] #get the frequency 2
+        fy=frequency_context(l)["A"]
+        for n,v in fy.items():
+            ffy=v
+        fxy=frequency_w_et_context(l)
+        for k in fxy:
+            if k[0]==w:
+                ffxy=fxy[k]
+                list_allpmi_A.append(math.log(ffxy/(fx*ffy)))
+                allpmi_A[w]=list_allpmi_A
 
-    for k2 in f2["A"]:
-        for k3 in f3["A"]:
-            k1=(k2,k3[0],k3[1])
-            if k2 in k1[0] and k1 in list(f1.keys()):
-                allpmi_A[k2].append(math.log(f1[k1]/(f2["A"][k2]*f3["A"][k3])))
+    for i in range(len(frequency_w(l)["ADV"])):
+        w=list(frequency_w(l)["ADV"].keys())[i] #get one word "blesse,N"
+        fx=frequency_w(l)["ADV"][w] #get the frequency 2
+        fy=frequency_context(l)["ADV"]
+        for n,v in fy.items():
+            ffy=v
+        fxy=frequency_w_et_context(l)
+        for k in fxy:
+            if k[0]==w:
+                ffxy=fxy[k]
+                list_allpmi_ADV.append(math.log(ffxy/(fx*ffy)))
+                allpmi_ADV[w]=list_allpmi_ADV
 
-    for k2 in f2["ADV"]:
-        for k3 in f3["ADV"]:
-            k1=(k2,k3[0],k3[1])
-            if k2 in k1[0] and k1 in list(f1.keys()):
-                allpmi_ADV[k2].append(math.log(f1[k1]/(f2["ADV"][k2]*f3["ADV"][k3])))
-    
     filename="pmi.txt"
     with open(filename,'w') as f: #on enregistre les pmi de chaque mot
-        for i in list(set(allpmi_N)):
-                f.write(k2[0]+"\tNOMS")
+        for i in list(set(list_allpmi_N)):
+                f.write("NOMS")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
 
-        for i in list(set(allpmi_V)):
-                f.write(k2[0]+"VERBES")
+        for i in list(set(list_allpmi_V)):
+                f.write("VERBES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
 
-        for i in list(set(allpmi_A)):
-                f.write(k2[0]+"ADJECTIVES")
+        for i in list(set(list_allpmi_A)):
+                f.write("ADJECTIVES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
 
-        for i in list(set(allpmi_ADV)):
-                f.write(k2[0]+"ADVERBES")
+        for i in list(set(list_allpmi_ADV)):
+                f.write("ADVERBES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
+
     f.close()
 
-    return allpmi_N
 
 #def consinus(w1,w2):
+
+
+                
+        
+
+
 
 
 
@@ -454,7 +511,7 @@ def pmi(l):
 
 #TESTS
 
-m = "estrepublicain.extrait-aa.19998.outmalt"
+m = "EP.tcs.melt.utf8.split-az.outmalt"
 
 l=(readLemmeEtCategorie(m))
 #dictt=dict_tout_mot(readLemmeEtCategorie(m))
@@ -462,5 +519,8 @@ l=(readLemmeEtCategorie(m))
 #print(frequency_w(l))
 #print(frequency_context(l))
 #print(frequency_w_et_context(l).keys())
-print(pmi(l))
+#print(pmi(l))
+print(demo(l))
+
+
 
