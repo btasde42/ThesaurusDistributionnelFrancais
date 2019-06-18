@@ -374,68 +374,77 @@ def frequency_w_et_context(l):
 
 
 def pmi(l):
-    
-    allpmi_N=[]
-    allpmi_V=[]
-    allpmi_A=[]
-    allpmi_ADV=[]
 
-    '''
+    allpmi={}
+    
+    allpmi_N={}
+    allpmi_V={}
+    allpmi_A={}
+    allpmi_ADV={}
+
+
     allpmi["N"]=allpmi_N
     allpmi["V"]=allpmi_V
     allpmi["A"]=allpmi_A
     allpmi["ADV"]=allpmi_ADV
-    '''
+
 
     f1=frequency_w_et_context(l) #here f1 is actually a dictionnary {((w,c),r,(w',c)):freq ...
     f2=frequency_w(l) # here f2 is a dictionnary {"N" : (w,c):freq ...
     f3=frequency_context(l) # here f3 is a dictionnary {"N" : (r,(w',c)):freq ...
+    
+    for k2 in f2["N"]:
+        for k3 in f3["N"]:
+            k1=(k2,k3[0],k3[1])
+            if k2 in k1[0] and k1 in list(f1.keys()):
+                allpmi_N[k2].append(math.log(f1[k1]/(f2["N"][k2]*f3["N"][k3])))
 
-    for k1 in f1:
-        if k1[0] in list(f2["N"].keys()) and k1[1:] in list(f3["N"].keys()):
-            allpmi_N.append(math.log(f1[k1]/(f2["N"][k1[0]]*f3["N"][k1[1:]])))
+    for k2 in f2["V"]:
+        for k3 in f3["V"]:
+            k1=(k2,k3[0],k3[1])
+            if k2 in k1[0] and k1 in list(f1.keys()):
+                allpmi_V[k2].append(math.log(f1[k1]/(f2["V"][k2]*f3["V"][k3])))
 
-    for k2 in f1:
-        if k2[0] in list(f2["V"].keys()) and k2[1:] in list(f3["V"].keys()):
-            allpmi_V.append(math.log(f1[k2]/(f2["V"][k2[0]]*f3["V"][k2[1:]])))
+    for k2 in f2["A"]:
+        for k3 in f3["A"]:
+            k1=(k2,k3[0],k3[1])
+            if k2 in k1[0] and k1 in list(f1.keys()):
+                allpmi_A[k2].append(math.log(f1[k1]/(f2["A"][k2]*f3["A"][k3])))
 
-    for k3 in f1:
-        if k3[0] in list(f2["A"].keys()) and k3[1:] in list(f3["A"].keys()):
-            allpmi_A.append(math.log(f1[k3]/(f2["A"][k3[0]]*f3["A"][k3[1:]])))
-
-    for k4 in f1:
-        if k4[0] in list(f2["ADV"].keys()) and k4[1:] in list(f3["ADV"].keys()):
-            allpmi_ADV.append(math.log(f1[k4]/(f2["ADV"][k4[0]]*f3["ADV"][k4[1:]])))
-
-
-    filename='pmi.csv'
+    for k2 in f2["ADV"]:
+        for k3 in f3["ADV"]:
+            k1=(k2,k3[0],k3[1])
+            if k2 in k1[0] and k1 in list(f1.keys()):
+                allpmi_ADV[k2].append(math.log(f1[k1]/(f2["ADV"][k2]*f3["ADV"][k3])))
+    
+    filename="pmi.txt"
     with open(filename,'w') as f: #on enregistre les pmi de chaque mot
         for i in list(set(allpmi_N)):
-                f.write(k1[0][0]+"NOMS")
+                f.write(k2[0]+"\tNOMS")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
 
         for i in list(set(allpmi_V)):
-                f.write(k2[0][0]+"VERBES")
+                f.write(k2[0]+"VERBES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
 
         for i in list(set(allpmi_A)):
-                f.write(k3[0][0]+"ADJECTIVES")
+                f.write(k2[0]+"ADJECTIVES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
 
         for i in list(set(allpmi_ADV)):
-                f.write(k4[0][0]+"ADVERBES")
+                f.write(k2[0]+"ADVERBES")
                 f.write('\t')
                 f.write(str(i))
                 f.write('\n')
-
     f.close()
 
+    return allpmi_N
 
 #def consinus(w1,w2):
 
